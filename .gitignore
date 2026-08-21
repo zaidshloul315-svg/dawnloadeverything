@@ -1,0 +1,7 @@
+*.mp3
+*.mp4
+*.m4a
+build/
+dist/
+*.exe
+__pycache__/

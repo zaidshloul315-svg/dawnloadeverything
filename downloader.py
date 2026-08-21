@@ -9,6 +9,11 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+def get_download_path():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.abspath(".")
+
 def get_video_info(url):
     ffmpeg_dir = resource_path(".")
     ydl_opts = {
@@ -38,8 +43,15 @@ def get_video_info(url):
 
 def download_media(url, format_type, quality=None, is_playlist=False):
     ffmpeg_dir = resource_path(".")
+    download_dir = get_download_path()
+    
+    if is_playlist:
+        out_template = os.path.join(download_dir, '%(playlist_title)s', '%(title)s.%(ext)s')
+    else:
+        out_template = os.path.join(download_dir, '%(title)s.%(ext)s')
+
     ydl_opts = {
-        'outtmpl': '%(playlist_title)s/%(title)s.%(ext)s' if is_playlist else '%(title)s.%(ext)s',
+        'outtmpl': out_template,
         'yes_playlist': is_playlist,
         'noplaylist': not is_playlist,
         'ignoreerrors': True,
